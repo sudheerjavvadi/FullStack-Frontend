@@ -33,6 +33,7 @@ import Settings from './pages/Settings';
 import AdminPanel from './pages/AdminPanel';
 import Footer from './components/Footer';
 import { fetchCurrentUser } from './store/slices/authSlice';
+import { startHealthCheck } from './api/healthCheck';
 
 function App() {
     const { isAuthenticated, token } = useSelector((state) => state.auth);
@@ -46,6 +47,11 @@ function App() {
             dispatch(fetchCurrentUser());
         }
     }, [dispatch, token]);
+
+    // Start health check to keep backend awake on Render
+    useEffect(() => {
+        startHealthCheck();
+    }, []);
 
     return (
         <div className="app-container min-h-screen bg-black text-white">

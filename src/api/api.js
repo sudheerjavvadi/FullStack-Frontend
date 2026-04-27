@@ -5,9 +5,10 @@ import axios from 'axios';
 // In development, falls back to '/api' which the Vite proxy forwards to localhost:8080
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
-// Create axios instance with default config
+// Create axios instance with timeout and retry configuration
 const api = axios.create({
     baseURL: API_BASE_URL,
+    timeout: 30000, // 30 second timeout
     headers: {
         'Content-Type': 'application/json',
     },
@@ -27,19 +28,39 @@ api.interceptors.request.use(
     }
 );
 
-// Response interceptor to handle errors
+// Retry interceptor for failed requests (helps with cold starts)
 api.interceptors.response.use(
     (response) => response,
-    (error) => {
+    async (error) => {
+        const config = error.config;
+
+        // Retry logic for login and auth endpoints (helps with Render cold starts)
+        if (!config || !config.retry) {
+            config.retry = 0;
+        }
+
+        config.retry += 1;
+
+        // Only retry on timeout or 503 (service unavailable)
+        if ((error.code === 'ECONNABORTED' || error.response?.status === 503) && config.retry <= 2) {
+            // Exponential backoff: 2s, 4s
+            const delay = Math.pow(2, config.retry) * 1000;
+            await new Promise((resolve) => setTimeout(resolve, delay));
+            return api(config);
+        }
+
+        // Re-validate authentication status before throwing error
         if (error.response?.status === 401) {
-            // Token expired or invalid
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             window.location.href = '/login';
         }
+
         return Promise.reject(error);
     }
 );
+
+
 
 // Auth API
 export const authAPI = {
