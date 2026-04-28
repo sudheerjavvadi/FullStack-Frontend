@@ -117,7 +117,25 @@ function Login() {
                     {error && <p className="form-error">{error}</p>}
 
                     {showSlowServerWarning && (
-                        <div style=(
+                        <div style={{
+                            padding: '1rem',
+                            marginBottom: '1.25rem',
+                            background: 'rgba(248, 113, 113, 0.1)',
+                            border: '1px solid rgba(248, 113, 113, 0.3)',
+                            borderRadius: '0.5rem',
+                            color: '#fca5a5',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.75rem',
+                            fontSize: '0.875rem'
+                        }}>
+                            <FiAlertCircle size={18} />
+                            <span>Server is cold-starting. Please be patient...</span>
+                        </div>
+                    )}
+
+                    <button type="submit" className="btn btn-primary btn-lg" disabled={loading} style={{ width: '100%' }}>
+                        {loading ? (
                             <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
                                 <span
                                     style={{
@@ -140,25 +158,7 @@ function Login() {
                         @keyframes spin {
                             to { transform: rotate(360deg); }
                         }
-                    `}</stylepadding: '1rem',
-                            marginBottom: '1.25rem',
-                            background: 'rgba(248, 113, 113, 0.1)',
-                            border: '1px solid rgba(248, 113, 113, 0.3)',
-                            borderRadius: '0.5rem',
-                            color: '#fca5a5',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.75rem',
-                            fontSize: '0.875rem'
-                        }}>
-                            <FiAlertCircle size={18} />
-                            <span>Server is cold-starting. Please be patient...</span>
-                        </div>
-                    )}
-
-                    <button type="submit" className="btn btn-primary btn-lg" disabled={loading} style={{ width: '100%' }}>
-                        {loading ? 'Signing in...' : <><FiLogIn /> Sign In</>}
-                    </button>
+                    `}</style>
                 </form>
 
                 <div style={{ marginTop: '1.75rem', textAlign: 'center', color: 'rgba(148, 163, 184, 0.95)', fontSize: '0.95rem' }}>
